@@ -12,7 +12,8 @@ const initialReferences ={
 export const MapsApp = () => {
 
     const mapDiv = useRef();
-    const [map, setMap] = useState()
+    // const [map, setMap] = useState();
+    const map = useRef();
     const [coords, setCoords] = useState(initialReferences);
     useEffect(() => {
 
@@ -22,18 +23,17 @@ export const MapsApp = () => {
             center:[initialReferences.lng, initialReferences.lat],
             zoom:initialReferences.zoom
         });
-
-        setMap(mapInstance);
+        map.current = mapInstance;
 
     }, []);
 
     useEffect(() => {
-      map?.on('move',()=>{
-            const {lng,lat} = map.getCenter();
+      map.current?.on('move',()=>{
+            const {lng,lat} = map.current.getCenter();
             setCoords({
                 lng:lng.toFixed(4),
                 lat:lat.toFixed(4),
-                zoom: map.getZoom().toFixed(4)
+                zoom: map.current.getZoom().toFixed(4)
             });
       });
 
