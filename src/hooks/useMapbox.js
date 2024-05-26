@@ -20,7 +20,14 @@ export const useMapbox = (initialReferences) => {
             container: mapDiv.current,
             style: 'mapbox://styles/mapbox/streets-v11',
             center:[initialReferences.lng, initialReferences.lat],
-            zoom:initialReferences.zoom
+            zoom:initialReferences.zoom,
+
+            minZoom: initialReferences.minZoom, // Minimum zoom level
+            maxZoom: initialReferences.maxZoom, // Maximum zoom level
+            maxBounds: [
+              [initialReferences.lng - initialReferences.minLng, initialReferences.lat - initialReferences.minLat], // Southwest coordinates
+              [initialReferences.lng + initialReferences.maxLng, initialReferences.lat + initialReferences.maxLat]  // Northeast coordinates
+            ]
         });
         map.current = mapInstance;
 
