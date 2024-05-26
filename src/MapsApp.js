@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useMapbox } from './hooks/useMapbox';
 
 
@@ -18,7 +18,13 @@ const initialReferences ={
 
 export const MapsApp = () => {
 
-   const { setRef, coords } = useMapbox(initialReferences);
+  const { setRef, coords, newMarker$ } = useMapbox(initialReferences);
+    
+    useEffect(() => {
+      newMarker$.subscribe(marker => {
+        console.log("new marker:",marker);
+      });
+    }, [newMarker$])
     
   return (
     <>
