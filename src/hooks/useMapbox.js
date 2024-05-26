@@ -18,6 +18,19 @@ export const useMapbox = (initialReferences) => {
     const map = useRef();
     const [coords, setCoords] = useState(initialReferences);
     
+    // function to add markers
+    const addMaker = useCallback((ev)=> {
+      const { lng,lat } = ev.lngLat;
+      const marker = new mapboxgl.Marker();
+      marker.id = v4(); 
+      marker
+          .setLngLat([lng,lat])
+          .addTo(map.current)
+          .setDraggable(true);
+
+      markers.current[ marker.id ] = marker;
+    },[]);
+
     useEffect(() => {
 
         const mapInstance = new mapboxgl.Map({
@@ -53,23 +66,16 @@ export const useMapbox = (initialReferences) => {
     
     // Add tags to the map
     useEffect(() => {
-      map.current?.on('click',(ev)=>{
-        const { lng,lat } = ev.lngLat;
-        const marker = new mapboxgl.Marker();
-        marker.id = v4(); 
-        marker
-            .setLngLat([lng,lat])
-            .addTo(map.current)
-            .setDraggable(true);
-
-        markers.current[ marker.id ] = marker;
-      })
-    }, [])
+      map.current?.on('click',addMaker);
+    }, [addMaker]);
     
 
     return {
         coords,
         markers,
+
+        // methods
+        addMaker,
         setRef
     }
 }
