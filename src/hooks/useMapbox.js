@@ -17,8 +17,8 @@ export const useMapbox = (initialReferences) => {
     const markers = useRef({});
 
     //Observables of RXjs
-    // const moveMarker;
     const newMarker = useRef( new Subject());
+    const moveMarker = useRef( new Subject());
 
     const map = useRef();
     const [coords, setCoords] = useState(initialReferences);
@@ -48,6 +48,11 @@ export const useMapbox = (initialReferences) => {
         const { lng , lat } = target.getLngLat();
         
         // TODO: emit marker changes 
+        moveMarker.current.next({
+          id,
+          lng,
+          lat
+        })
       })
 
     },[]);
@@ -100,6 +105,7 @@ export const useMapbox = (initialReferences) => {
         setRef,
 
         // Observables
-        newMarker$ : newMarker.current
+        newMarker$ : newMarker.current,
+        moveMarker$: moveMarker.current
     }
 }

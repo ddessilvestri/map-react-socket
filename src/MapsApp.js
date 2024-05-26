@@ -18,13 +18,19 @@ const initialReferences ={
 
 export const MapsApp = () => {
 
-  const { setRef, coords, newMarker$ } = useMapbox(initialReferences);
+  const { setRef, coords, newMarker$,moveMarker$ } = useMapbox(initialReferences);
     
     useEffect(() => {
       newMarker$.subscribe(marker => {
         console.log("new marker:",marker);
       });
     }, [newMarker$])
+    
+    useEffect(() => {
+        moveMarker$.subscribe(marker =>{
+            console.log("marker moving",marker);
+        })
+    }, [moveMarker$])
     
   return (
     <>
