@@ -1,5 +1,5 @@
 import {useRef,useState,useEffect, useCallback} from 'react';
-import mapboxgl from "mapbox-gl";
+import mapboxgl from 'mapbox-gl'
 import { v4 } from 'uuid';
 import { Subject } from 'rxjs';
 
