@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 // import { useMapbox } from './hooks/useMapbox';
 import {useMapbox} from '../hooks/useMapbox';
+import { SocketContext } from '../context/SocketContext';
 
 const initialReferences ={
     lng:-122.4725,
@@ -18,18 +19,48 @@ const initialReferences ={
 
 export const MapsPage = () => {
 
-  const { setRef, coords, newMarker$,moveMarker$ } = useMapbox(initialReferences);
-    
+  const { setRef, coords, newMarker$,moveMarker$,addMarker,updateLocation } = useMapbox(initialReferences);
+  const { socket } = useContext(SocketContext);  
+
+  // listen the current markers
+useEffect(() => {
+  socket.on('active-markers',(markers)=>{
+    for(const key of Object.keys(markers)){
+      addMarker(markers[key],key);
+    }
+  })
+}, [socket,addMarker])
+
+
     useEffect(() => {
       newMarker$.subscribe(marker => {
+        socket.emit('new-marker',marker);
       });
-    }, [newMarker$])
+    }, [newMarker$,socket])
     
     useEffect(() => {
         moveMarker$.subscribe(marker =>{
+          socket.emit('updated-marker',marker);
         })
-    }, [moveMarker$])
+    }, [moveMarker$,socket])
     
+    // Move marker using sockets
+
+    useEffect(() => {
+       socket.on('updated-marker',(marker)=>{
+        updateLocation(marker);
+       }) 
+    }, [socket])
+    
+
+    // listen new markers
+    useEffect(() => {
+      socket.on('new-marker',(marker)=>{
+        addMarker(marker,marker.id);
+      })
+    }, [socket,addMarker])
+    
+
   return (
     <>
 

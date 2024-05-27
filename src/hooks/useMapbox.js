@@ -24,23 +24,27 @@ export const useMapbox = (initialReferences) => {
     const [coords, setCoords] = useState(initialReferences);
     
     // function to add markers
-    const addMaker = useCallback((ev)=> {
-      const { lng,lat } = ev.lngLat;
+    const addMarker = useCallback((ev,id)=> {
+      const { lng,lat } = ev.lngLat || ev;
       const marker = new mapboxgl.Marker();
-      marker.id = v4(); 
+      marker.id = id ?? v4(); 
       marker
           .setLngLat([lng,lat])
           .addTo(map.current)
           .setDraggable(true);
 
+          
       markers.current[ marker.id ] = marker;
+          // TODO : if the marker has id do not emit
+      if (!id){
+        
+        newMarker.current.next({
+          id: marker.id,
+          lng,
+          lat
+        });
 
-      // TODO : if the marker has id do not emit
-      newMarker.current.next({
-        id: marker.id,
-        lng,
-        lat
-      });
+      }
 
       // listen marker drag
       marker.on('drag',({target})=>{
@@ -56,6 +60,12 @@ export const useMapbox = (initialReferences) => {
       })
 
     },[]);
+
+    // function to update the marker location
+
+    const updateLocation = useCallback(({id,lng,lat})=> {
+      markers.current[id].setLngLat([lng,lat]);
+    },[])
 
     useEffect(() => {
 
@@ -92,8 +102,8 @@ export const useMapbox = (initialReferences) => {
     
     // Add tags to the map
     useEffect(() => {
-      map.current?.on('click',addMaker);
-    }, [addMaker]);
+      map.current?.on('click',addMarker);
+    }, [addMarker]);
     
 
     return {
@@ -101,8 +111,9 @@ export const useMapbox = (initialReferences) => {
         markers,
 
         // methods
-        addMaker,
+        addMarker,
         setRef,
+        updateLocation,
 
         // Observables
         newMarker$ : newMarker.current,
